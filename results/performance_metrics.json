@@ -1,0 +1,12 @@
+{
+    "cumulative_return": -0.0818,
+    "annualized_return": -0.071,
+    "sharpe_ratio": -0.4755,
+    "max_drawdown": -0.1566,
+    "win_rate": 0.1111,
+    "profit_factor": 0.8527,
+    "avg_trade_return_pct": 0.0001,
+    "benchmark_return": 0.2716,
+    "n_trades": 41.0,
+    "n_trading_days": 292.0
+}
