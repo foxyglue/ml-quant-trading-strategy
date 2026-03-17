@@ -256,7 +256,7 @@ def add_volatility_features(df: pd.DataFrame) -> pd.DataFrame:
     """
     out = df.copy()
 
-    log_returns = np.log(out["Close"] / out["Close"].shift(1))
+    log_returns = np.log(out["Close"] / out["Close"].shift(1)) # 
     out["volatility_20"] = log_returns.rolling(window=VOL_PERIOD).std() # menghitung volatilitas sebagai rolling std dev dari log returns selama 20 hari, menangkap seberapa bergejolak harga baru-baru ini
 
     out["atr_14"] = ta.atr(out["High"], out["Low"], out["Close"], length=ATR_PERIOD)
@@ -279,6 +279,20 @@ def add_lagged_returns(
     These give the model explicit short-term memory without requiring a
     recurrent architecture.  Computed as simple percentage returns (not log
     returns) to keep the scale linear and easy to interpret.
+    
+    So on any given day `t`, the feature `return_lag_1` answers: *"what was yesterday's return?"* And 
+    `return_lag_2` answers: *"what was the day before yesterday's return?"* The model never sees today's return as a 
+    feature — only past returns. This is the lookahead-bias protection baked into the shift.
+
+    Visually, for a 3-day example:
+    ```
+    t     Close    daily_return    return_lag_1    return_lag_2
+    Mon   100.0    NaN             NaN             NaN
+    Tue   102.0    +2.0%           NaN             NaN
+    Wed   101.0    -1.0%           +2.0%           NaN
+    Thu   104.0    +3.0%           -1.0%           +2.0%
+    Fri   103.0    -1.0%           +3.0%           -1.0%
+    ```
 
     New columns
     -----------
@@ -334,8 +348,8 @@ def add_target(df: pd.DataFrame) -> pd.DataFrame:
         Input DataFrame with ``target`` appended.
     """
     out = df.copy()
-    future_close = out["Close"].shift(-1) # harga penutupan besok, di-shift ke atas sehingga sejajar dengan fitur hari ini dan ldibandingkan dgn harga Close hari ini
-    out["target"] = (future_close > out["Close"]).astype("Int8")
+    future_close = out["Close"].shift(-1) # harga penutupan besok, di-shift ke atas sehingga sejajar dengan fitur hari ini kemudian
+    out["target"] = (future_close > out["Close"]).astype("Int8") # dibandingkan dgn harga Close hari ini
     return out
 
 
